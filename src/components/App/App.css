@@ -1,0 +1,10 @@
+.table {
+  width: 400px;
+  margin: auto;
+  padding: 30px;
+  text-align: center;
+  border: 5px solid black;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}

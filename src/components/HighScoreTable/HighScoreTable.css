@@ -1,0 +1,9 @@
+table {
+  width: 100%;
+  border: 5px solid yellow;
+  padding: 5px 2px 2px;
+}
+th {
+  display: block;
+  margin-bottom: 5px;
+}

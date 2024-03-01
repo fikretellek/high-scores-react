@@ -1,0 +1,12 @@
+tr {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  text-align: right;
+  border: 2px solid green;
+  padding: 5px;
+  margin: -2px;
+}
+td {
+  width: 50%;
+}
