@@ -3,20 +3,22 @@ import HighScoreTable from "../HighScoreTable/HighScoreTable";
 import "./App.css";
 function App() {
   const countries = allCountryScores.sort((a, b) => {
-    if (a.name > b.name) {
-      return 1;
-    } else if (a.name < b.name) {
-      return -1;
-    } else {
-      return 0;
-    }
+    if (a.name > b.name) return a.name > b.name ? 1 : a.name < b.name ? -1 : 0;
   });
 
   return (
     <div className="table">
       <h2>High Scores Per Country</h2>
+      <button>ascending and descending</button>
+
       {countries.map((country) => {
-        return <HighScoreTable key={`table-${country.name}`} country={country.name} scores={country.scores} />;
+        return (
+          <HighScoreTable
+            key={`table-${country.name}`}
+            country={country.name}
+            scores={country.scores}
+          />
+        );
       })}
     </div>
   );
