@@ -41,6 +41,7 @@ jobs:
         ssh -o "StrictHostKeyChecking=no" -i /tmp/mykey.pem $EC2_USER@$(aws ec2 describe-instances --instance-ids $EC2_INSTANCE_ID --query "Reservations[0].Instances[0].PublicIpAddress" --output text) << 'EOF'
           sudo yum update -y
           sudo yum install -y unzip
+          echo "here--------------------------------------------------"
           aws s3 cp s3://${S3_BUCKET}/build.zip build.zip
           unzip -o build.zip -d /var/www/html/
           sudo systemctl restart httpd
