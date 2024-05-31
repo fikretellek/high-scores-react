@@ -25,7 +25,7 @@ jobs:
       run: npm run build
 
     - name: Zip the build artifacts
-      run: zip -r build.zip build/
+      run: zip -r build.zip dist/
 
     - name: Upload to S3
       env:
