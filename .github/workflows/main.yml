@@ -32,8 +32,19 @@ jobs:
       run: |
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/mykey.pem
         chmod 600 /tmp/mykey.pem
-        ls -la /tmp/mykey.pem
-        cat /tmp/mykey.pem
+
+    - name: Debugging AWS CLI
+      run: |
+        aws --version
+        aws configure list
+        aws sts get-caller-identity
+
+    - name: Debugging Environment Variables
+      run: |
+        echo "AWS_REGION: ${{ secrets.AWS_REGION_EC }}"
+        echo "S3_BUCKET: ${{ secrets.S3_BUCKET }}"
+        echo "EC2_INSTANCE_ID: ${{ secrets.EC2_INSTANCE_ID }}"
+        echo "EC2_USER: ${{ secrets.EC2_USER }}"
 
     - name: Connect to EC2 and deploy
       env:
@@ -45,6 +56,7 @@ jobs:
         EC2_USER: ${{ secrets.EC2_USER }}
       run: |
         PUBLIC_IP=$(aws ec2 describe-instances --instance-ids $EC2_INSTANCE_ID --query "Reservations[0].Instances[0].PublicIpAddress" --output text --region $AWS_REGION)
+        echo "EC2 Public IP: $PUBLIC_IP"
         ssh -o "StrictHostKeyChecking=no" -i /tmp/mykey.pem $EC2_USER@$PUBLIC_IP << 'EOF'
           sudo yum update -y
           sudo yum install -y httpd unzip
