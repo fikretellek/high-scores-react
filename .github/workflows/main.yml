@@ -32,7 +32,7 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ secrets.AWS_REGION_EC }}
-        S3_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
+        S3_BUCKET: ${{ secrets.S3_BUCKET }}
         EC2_INSTANCE_ID: ${{ secrets.EC2_INSTANCE_ID }}
         EC2_USER: ${{ secrets.EC2_USER }}
       run: |
@@ -44,6 +44,7 @@ jobs:
           sudo systemctl start httpd
           sudo systemctl enable httpd
           sudo yum install -y unzip
+          aws s3 cp s3://${{ secrets.S3_BUCKET }}/build.zip build.zip
           sudo mkdir -p /var/www/html/dist
           sudo unzip -o build.zip -d /var/www/html/dist/
           sudo chmod -R 777 /var/www/html/dist
