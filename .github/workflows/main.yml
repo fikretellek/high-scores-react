@@ -39,10 +39,11 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ secrets.AWS_REGION_EC }}
       run: |
+        echo "AWS_REGION: $AWS_REGION"
         aws --version
         aws configure list
         aws sts get-caller-identity
-
+        
     - name: Debugging Environment Variables
       run: |
         echo "AWS_REGION: ${{ secrets.AWS_REGION_EC }}"
