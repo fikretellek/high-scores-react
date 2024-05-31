@@ -43,6 +43,7 @@ jobs:
           sudo yum install -y unzip
           echo "here--------------------------------------------------"
           aws s3 cp s3://${{ secrets.S3_BUCKET }}/build.zip build.zip
+          sudo chmod -R 777 /var/www/html/
           sudo mkdir -p /var/www/html/
           unzip -o build.zip -d /var/www/html/
           sudo systemctl restart httpd
