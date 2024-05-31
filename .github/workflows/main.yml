@@ -40,10 +40,11 @@ jobs:
         chmod 600 /tmp/mykey.pem
         ssh -o "StrictHostKeyChecking=no" -i /tmp/mykey.pem $EC2_USER@$(aws ec2 describe-instances --instance-ids $EC2_INSTANCE_ID --query "Reservations[0].Instances[0].PublicIpAddress" --output text) << 'EOF'
           sudo yum update -y
+          sudo yum install -y httpd
+          sudo systemctl start httpd
+          sudo systemctl enable httpd
           sudo yum install -y unzip
-          echo "here--------------------------------------------------"
-          aws s3 cp s3://${{ secrets.S3_BUCKET }}/build.zip build.zip
-          sudo chmod -R 777 /var/www/html/
-          sudo mkdir -p /var/www/html/
-          unzip -o build.zip -d /var/www/html/
+          sudo mkdir -p /var/www/html/dist
+          sudo unzip -o build.zip -d /var/www/html/dist/
+          sudo chmod -R 777 /var/www/html/dist
           sudo systemctl restart httpd
