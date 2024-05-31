@@ -38,7 +38,8 @@ jobs:
       run: |
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/mykey.pem
         chmod 600 /tmp/mykey.pem
-        ssh -o "StrictHostKeyChecking=no" -i /tmp/mykey.pem $EC2_USER@$(aws ec2 describe-instances --instance-ids $EC2_INSTANCE_ID --query "Reservations[0].Instances[0].PublicIpAddress" --output text) << 'EOF'
+        PUBLIC_IP=$(aws ec2 describe-instances --instance-ids $EC2_INSTANCE_ID --query "Reservations[0].Instances[0].PublicIpAddress" --output text --region $AWS_REGION)
+        ssh -o "StrictHostKeyChecking=no" -i /tmp/mykey.pem $EC2_USER@$PUBLIC_IP << 'EOF'
           sudo yum update -y
           sudo yum install -y httpd
           sudo systemctl start httpd
