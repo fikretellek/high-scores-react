@@ -43,7 +43,7 @@ jobs:
           sudo yum install -y httpd unzip
           sudo systemctl start httpd
           sudo systemctl enable httpd
-          aws s3 cp s3://${{ secrets.S3_BUCKET_NAME }}/build.zip build.zip
+          aws s3 cp s3://${{ secrets.S3_BUCKET }}/build.zip build.zip
           sudo mkdir -p /var/www/html/dist
           sudo unzip -o build.zip -d /var/www/html/dist/
           sudo chmod -R 755 /var/www/html/dist
