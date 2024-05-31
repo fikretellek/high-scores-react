@@ -27,11 +27,6 @@ jobs:
         S3_BUCKET: ${{ secrets.S3_BUCKET }}
       run: |
         aws s3 cp build.zip s3://${S3_BUCKET}/build.zip
-        
-    - name: Create SSH key file
-      run: |
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/mykey.pem
-        chmod 600 /tmp/mykey.pem
 
     - name: Connect to EC2 and deploy
       env:
@@ -42,6 +37,8 @@ jobs:
         EC2_INSTANCE_ID: ${{ secrets.EC2_INSTANCE_ID }}
         EC2_USER: ${{ secrets.EC2_USER }}
       run: |
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/mykey.pem
+        chmod 400 /tmp/mykey.pem
         ssh -i "/tmp/mykey.pem" ec2-user@ec2-3-10-225-226.eu-west-2.compute.amazonaws.com
           sudo yum update -y
           sudo yum install -y httpd unzip
