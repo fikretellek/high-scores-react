@@ -56,4 +56,3 @@ jobs:
           aws s3 cp s3://${S3_BUCKET}/build.zip build.zip
           unzip -o build.zip -d /var/www/html/
           sudo systemctl restart httpd
-EOF
