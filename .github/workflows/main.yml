@@ -11,12 +11,12 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3   # Update to the latest version (v3)
+      uses: actions/checkout@v3
 
     - name: Set up Node.js
-      uses: actions/setup-node@v3  # Update to the latest version (v3)
+      uses: actions/setup-node@v3
       with:
-        node-version: '16'  # Update to the latest supported Node.js version
+        node-version: '16'
 
     - name: Install dependencies
       run: npm install
@@ -25,7 +25,7 @@ jobs:
       run: npm run build
 
     - name: Zip the build artifacts
-      run: zip -r build.zip dist/
+      run: zip -r build.zip build/
 
     - name: Upload to S3
       env:
@@ -44,13 +44,9 @@ jobs:
         EC2_INSTANCE_ID: ${{ secrets.EC2_INSTANCE_ID }}
         EC2_USER: ${{ secrets.EC2_USER }}
       run: |
-        aws ec2-instance-connect send-ssh-public-key \
-          --instance-id $EC2_INSTANCE_ID \
-          --availability-zone $(aws ec2 describe-instances --instance-ids $EC2_INSTANCE_ID --query "Reservations[0].Instances[0].Placement.AvailabilityZone" --output text) \
-          --instance-os-user $EC2_USER \
-          --ssh-public-key file://~/.ssh/id_rsa.pub
-
-        ssh -o "StrictHostKeyChecking=no" $EC2_USER@$(aws ec2 describe-instances --instance-ids $EC2_INSTANCE_ID --query "Reservations[0].Instances[0].PublicIpAddress" --output text) << 'EOF'
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/mykey.pem
+        chmod 600 /tmp/mykey.pem
+        ssh -o "StrictHostKeyChecking=no" -i /tmp/mykey.pem $EC2_USER@$(aws ec2 describe-instances --instance-ids $EC2_INSTANCE_ID --query "Reservations[0].Instances[0].PublicIpAddress" --output text) << 'EOF'
           sudo yum update -y
           sudo yum install -y unzip
           aws s3 cp s3://${S3_BUCKET}/build.zip build.zip
