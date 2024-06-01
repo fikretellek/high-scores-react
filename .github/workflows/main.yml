@@ -45,6 +45,12 @@ jobs:
           sudo systemctl enable httpd
           aws s3 cp s3://${{ secrets.S3_BUCKET }}/build.zip build.zip
           sudo mkdir -p /var/www/html/dist
+          echo "here-------------------"
+          pwd
+          ls
           sudo unzip -o build.zip -d /var/www/html/dist/
+          echo "here------------2"
+          pwd
+          ls
           sudo chmod -R 755 /var/www/html/dist
           sudo systemctl restart httpd
