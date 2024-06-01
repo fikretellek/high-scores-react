@@ -18,7 +18,7 @@ jobs:
     - name: Build project
       run: npm run build
     - name: Zip the build artifacts
-      run: zip -r build.zip dist/
+      run: zip -r build.zip dist/*
     - name: Upload to S3
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -55,7 +55,7 @@ jobs:
           echo "here-------------------1"
           pwd
           ls *.*
-          sudo unzip -o build.zip -d /var/www/html/dist/
+          sudo unzip -o build.zip -d /var/www/html/
           echo "here------------2"
           pwd
           ls *.*
