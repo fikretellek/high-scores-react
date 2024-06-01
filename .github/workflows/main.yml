@@ -51,7 +51,7 @@ jobs:
           pwd
           ls *.*
           aws s3 cp s3://${{ secrets.S3_BUCKET }}/build.zip build.zip
-          rm -rf /var/www/html/*
+          sudo rm -rf /var/www/html/*
           sudo mkdir -p /var/www/html/
           echo "here-------------------1"
           pwd
