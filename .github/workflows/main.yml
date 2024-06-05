@@ -1,0 +1,64 @@
+name: Deploy to EC2
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+    - name: Install dependencies
+      run: npm install
+    - name: Build project
+      run: npm run build
+    - name: Zip the build artifacts
+      run: cd dist && zip -r ../build.zip ./*
+    - name: Upload to S3
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+        S3_BUCKET: ${{ secrets.S3_BUCKET }}
+      run: |
+        aws s3 cp build.zip s3://${S3_BUCKET}/build.zip
+    - name: Connect to EC2 and deploy
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+        S3_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
+        EC2_INSTANCE_ID: ${{ secrets.EC2_INSTANCE_ID }}
+        EC2_USER: ${{ secrets.EC2_USER }}
+      run: |
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/mykey.pem
+        chmod 600 /tmp/mykey.pem
+        ssh -o "StrictHostKeyChecking=no" -i /tmp/mykey.pem $EC2_USER@$(aws ec2 describe-instances --instance-ids $EC2_INSTANCE_ID --query "Reservations[0].Instances[0].PublicIpAddress" --output text) << 'EOF'
+          sudo yum update -y
+          sudo yum install -y httpd unzip
+          sudo systemctl start httpd
+          sudo systemctl enable httpd
+          echo "here------------"
+          pwd
+          ls *.*
+          rm -rf ./*
+          echo "here------------0"
+          pwd
+          ls *.*
+          aws s3 cp s3://${{ secrets.S3_BUCKET }}/build.zip build.zip
+          sudo rm -rf /var/www/html/*
+          sudo mkdir -p /var/www/html/
+          echo "here-------------------1"
+          pwd
+          ls *.*
+          sudo unzip -o build.zip -d /var/www/html/
+          echo "here------------2"
+          pwd
+          ls *.*
+          sudo chmod -R 755 /var/www/html/
+          sudo systemctl restart httpd
